@@ -2,7 +2,7 @@
 
 > **Ağ Mühendisleri, Siber Güvenlik Uzmanları ve Ağ Öğrencileri İçin Gelişmiş Spanning Tree Protocol (STP/RSTP/MSTP) Görselleştirme, BPDU Analiz ve Failover Simülasyon Konsolu**
 
-<img width="1916" height="927" alt="image" src="https://github.com/user-attachments/assets/67e7604a-a8fb-4a4e-a8a9-5ee0971577ec" />
+<img width="1916" height="927" alt="image" src="https://github.com/user-attachments/assets/a9a689d0-f71e-4d1c-871f-a46d7305187d" />
 
 
 ---
@@ -146,7 +146,7 @@ Bu proje **MIT Lisansı** ile lisanslanmıştır. Eğitim ve kurumsal ağ mühen
 
 > **Advanced Spanning Tree Protocol (STP/RSTP/MSTP) Visualization, Analysis, and Failover Simulation Console for Network Engineers, Cybersecurity Specialists, and Network Students**
 
-<img width="1916" height="927" alt="image" src="https://github.com/user-attachments/assets/67e7604a-a8fb-4a4e-a8a9-5ee0971577ec" />
+<img width="1916" height="927" alt="image" src="https://github.com/user-attachments/assets/7b9f7e89-649a-4539-a0fe-48bd1cfc88ca" />
 
 ---
 
