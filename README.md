@@ -106,7 +106,7 @@ stp-simulator/
 ├── vite.config.ts          # Vite geliştirme ve derleme ayarları
 ├── package.json            # Proje bağımlılıkları ve scriptleri
 ├── README.md               # Proje dokümantasyonu
-├── LICENSE                 # MIT Açık Kaynak Lisansı
+├── LICENSE                 # GPL-3.0 Açık Kaynak Lisansı
 ├── preview.png             # Uygulama önizleme görseli
 └── src/
     ├── App.tsx             # Ana uygulama durum yöneticisi ve yakınsama bağlayıcısı
