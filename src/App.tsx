@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { STPVersion, CostStandard, Language, SwitchNode, Port, LinkConnection, LinkSpeed, SyslogEntry, STPTimers, DEFAULT_STP_TIMERS } from './core/types';
 import { PRESET_TOPOLOGIES } from './core/presets';
 import { calculateSTPConvergence } from './core/stpEngine';
+import { getLinkCost } from './core/costTable';
 import { Header } from './components/Header';
 import { TopologyCanvas } from './components/TopologyCanvas';
 import { SyslogPanel } from './components/SyslogPanel';

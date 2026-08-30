@@ -579,7 +579,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
               <div className="grid grid-cols-2 gap-1.5 mt-2 pt-1 border-t border-[#1f293d]">
                 {swPorts.map((p) => {
                   let badgeBg = 'bg-slate-800 text-slate-300 border-slate-700';
-                  let badgeText = p.role;
+                  let badgeText: string = p.role;
 
                   if (p.role === 'ROOT') {
                     badgeBg = 'bg-emerald-950 text-emerald-300 border-emerald-600 font-bold';
