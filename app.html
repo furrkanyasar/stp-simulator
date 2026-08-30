@@ -846,7 +846,7 @@
               {/* Scaled & Panned Canvas Viewport */}
               <div className="w-full h-full origin-top-left" style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})` }}>
                 {/* SVG Link Lines (z-0) */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0" style={{ overflow: 'visible' }}>
                   {Array.from(convergence.links.values()).map(link => {
                     const pA = convergence.ports.get(link.portAId);
                     const pB = convergence.ports.get(link.portBId);
@@ -959,7 +959,7 @@
                 })}
 
                 {/* Floating Cable Port Badges Overlay (z-20) */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-20" style={{ overflow: 'visible' }}>
                   {Array.from(convergence.links.values()).map(link => {
                     const pA = convergence.ports.get(link.portAId);
                     const pB = convergence.ports.get(link.portBId);

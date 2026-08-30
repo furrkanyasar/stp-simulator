@@ -299,8 +299,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         className="w-full h-full origin-top-left"
         style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})` }}
       >
-        {/* SVG Links Layer (z-0 for lines) */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+        {/* SVG Links Layer (z-0 for lines) - overflow: visible ensures cables are never clipped */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0" style={{ overflow: 'visible' }}>
           {Array.from(links.values()).map((link) => {
             const portA = ports.get(link.portAId);
             const portB = ports.get(link.portBId);
@@ -587,8 +587,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
           );
         })}
 
-        {/* High-Level Floating Cable Port Badges Overlay (z-20) */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+        {/* High-Level Floating Cable Port Badges Overlay (z-20) - overflow: visible */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-20" style={{ overflow: 'visible' }}>
           {Array.from(links.values()).map((link) => {
             const portA = ports.get(link.portAId);
             const portB = ports.get(link.portBId);
