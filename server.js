@@ -31,8 +31,10 @@ const server = http.createServer((req, res) => {
   // 2. Resolve absolute file path safely within PUBLIC_DIR
   const filePath = path.resolve(path.join(PUBLIC_DIR, safePath));
 
-  // 3. Security Boundary Check: Enforce strictly within PUBLIC_DIR root
-  if (!filePath.startsWith(PUBLIC_DIR)) {
+  // 3. Security Boundary & Dotfile Check: Enforce strictly within PUBLIC_DIR root
+  const isWithinRoot = filePath === PUBLIC_DIR || filePath.startsWith(PUBLIC_DIR + path.sep);
+  const baseName = path.basename(filePath);
+  if (!isWithinRoot || baseName.startsWith('.')) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('403 Forbidden: Access Denied');
     return;

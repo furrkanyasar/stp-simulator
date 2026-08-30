@@ -38,6 +38,16 @@ export const LinkInspectorModal: React.FC<LinkInspectorModalProps> = ({
     }
   }, [link]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (link) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [link, onClose]);
+
   if (!link) return null;
 
   const handleSave = () => {

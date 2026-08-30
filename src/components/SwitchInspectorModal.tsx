@@ -34,6 +34,16 @@ export const SwitchInspectorModal: React.FC<SwitchInspectorModalProps> = ({
     }
   }, [sw]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (sw) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [sw, onClose]);
+
   if (!sw) return null;
   const t = getTranslation(lang);
 

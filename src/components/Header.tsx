@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="h-[44px] bg-[#0d1322] border-b border-[#1f293d] flex items-center justify-between px-3 shrink-0 select-none text-xs text-slate-200">
+    <header className="h-[44px] bg-[#0d1322] border-b border-[#1f293d] flex items-center justify-between px-3 shrink-0 select-none text-xs text-slate-200 overflow-x-auto">
       {/* Brand & Logo */}
       <div className="flex items-center space-x-2 font-semibold tracking-wider text-cyan-400 shrink-0">
         <div className="p-1 bg-cyan-950/70 border border-cyan-800/80 rounded text-cyan-400">
