@@ -387,13 +387,15 @@ export function calculateSTPConvergence(
     );
   });
 
-  // Root bridge ports: all designated
+  // Root bridge ports: all designated except self-loop BACKUP ports
   ports.forEach((p) => {
     if (p.switchId === rootId && p.connectedLinkId) {
       const link = links.get(p.connectedLinkId);
       if (link && link.status === 'UP') {
-        p.role = 'DESIGNATED';
-        p.state = 'FORWARDING';
+        if (p.role !== 'BACKUP') {
+          p.role = 'DESIGNATED';
+          p.state = 'FORWARDING';
+        }
       }
     }
   });

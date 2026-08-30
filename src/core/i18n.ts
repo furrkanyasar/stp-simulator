@@ -10,20 +10,21 @@ export interface Translations {
   shortCost: string;
   longCost: string;
   presets: string;
+  presetTopologies: string;
+  costStandard: string;
   recalculate: string;
   addSwitch: string;
   clearAll: string;
-  clearCanvas?: string;
-  presetTopologies?: string;
-  costStandard?: string;
+  clearCanvas: string;
   wiringOn: string;
   wiringOff: string;
-  wiringModeOn?: string;
-  wiringModeOff?: string;
+  wiringModeOn: string;
+  wiringModeOff: string;
   wiringStep1: string;
   wiringStep2: string;
   wiringBannerOff: string;
   trafficFlow: string;
+  trafficSimulation: string;
   stepPlayback: string;
   tabSyslog: string;
   tabTable: string;
@@ -34,8 +35,8 @@ export interface Translations {
   switchName: string;
   macAddress: string;
   priority: string;
-  portPriority?: string;
-  portName?: string;
+  portPriority: string;
+  portName: string;
   vlan: string;
   editSwitch: string;
   deleteSwitch: string;
@@ -65,24 +66,23 @@ export interface Translations {
   startTour: string;
   finishTour: string;
   nextTourStep: string;
-  prevStep?: string;
-  nextStep?: string;
-  pausePlay?: string;
-  autoPlay?: string;
-  noLogsYet?: string;
-  mstpTitle?: string;
-  mstpInstance?: string;
-  vlansMapped?: string;
-  instanceRoot?: string;
-  metricsTitle?: string;
-  totalSwitches?: string;
-  totalLinks?: string;
-  activeLoopsBlocked?: string;
-  rootSwitchId?: string;
-  failoverTitle?: string;
-  failoverDesc?: string;
-  trafficSimulation?: string;
   prevTourStep: string;
+  prevStep: string;
+  nextStep: string;
+  pausePlay: string;
+  autoPlay: string;
+  noLogsYet: string;
+  mstpTitle: string;
+  mstpInstance: string;
+  vlansMapped: string;
+  instanceRoot: string;
+  metricsTitle: string;
+  totalSwitches: string;
+  totalLinks: string;
+  activeLoopsBlocked: string;
+  rootSwitchId: string;
+  failoverTitle: string;
+  failoverDesc: string;
 
   // 8-Step Tour Translations
   tourStep1Title: string;
@@ -117,15 +117,21 @@ export const translations: Record<Language, Translations> = {
     shortCost: 'Short (16-bit)',
     longCost: 'Long (32-bit)',
     presets: 'Presets Topology',
+    presetTopologies: 'Presets',
+    costStandard: 'Cost Model',
     recalculate: 'Recalculate',
     addSwitch: '+ Add Switch',
     clearAll: 'Clear All',
+    clearCanvas: 'Clear All',
     wiringOn: 'WIRING MODE ON',
     wiringOff: '🔌 Connect Cable',
+    wiringModeOn: 'WIRING ACTIVE',
+    wiringModeOff: '🔌 Connect Cable',
     wiringStep1: 'STEP 1: Click source switch to pick exit port.',
     wiringStep2: 'STEP 2: Click destination switch to attach cable.',
     wiringBannerOff: 'Click switch to inspect. Drag switch to move. Drag empty canvas background to pan view.',
     trafficFlow: 'Traffic Flow',
+    trafficSimulation: 'Traffic Flow',
     stepPlayback: 'Step Playback',
     tabSyslog: 'BPDU LOG & TRACE',
     tabTable: 'SWITCH & PORT TABLE',
@@ -136,6 +142,8 @@ export const translations: Record<Language, Translations> = {
     switchName: 'Switch Name',
     macAddress: 'MAC Address',
     priority: 'Bridge Priority (BID)',
+    portPriority: 'Port Priority',
+    portName: 'Port Name',
     vlan: 'VLAN (System Ext)',
     editSwitch: 'Inspect Switch',
     deleteSwitch: 'Delete Switch',
@@ -165,7 +173,7 @@ export const translations: Record<Language, Translations> = {
     startTour: '🚀 Start Interactive Guided Tour',
     finishTour: 'Finish Tour',
     nextTourStep: 'Next Step →',
-    prevTourStep: 'Previous',
+    prevTourStep: '← Previous',
     prevStep: 'Previous',
     nextStep: 'Next',
     pausePlay: 'Pause',
@@ -182,7 +190,6 @@ export const translations: Record<Language, Translations> = {
     rootSwitchId: 'Root Switch ID',
     failoverTitle: 'Failover Simulation',
     failoverDesc: 'Double click link to simulate cut',
-    trafficSimulation: 'Traffic Flow',
 
     // 8-Step Tour Texts
     tourStep1Title: '1. STP Protocol Selector (802.1D / 802.1w / 802.1s)',
@@ -215,15 +222,21 @@ export const translations: Record<Language, Translations> = {
     shortCost: 'Kısa (16-bit)',
     longCost: 'Uzun (32-bit)',
     presets: 'Hazır Topolojiler',
+    presetTopologies: 'Hazır Topolojiler',
+    costStandard: 'Maliyet Modeli',
     recalculate: 'Yeniden Hesapla',
     addSwitch: '+ Switch Ekle',
     clearAll: 'Tümünü Temizle',
+    clearCanvas: 'Tümünü Temizle',
     wiringOn: 'KABLO ÇEKME MODU AÇIK',
     wiringOff: '🔌 Kablo Tak',
+    wiringModeOn: 'KABLO BAĞLAMA AKTİF',
+    wiringModeOff: '🔌 Kablo Tak',
     wiringStep1: 'ADIM 1: Çıkış portunu seçmek için kaynak anahtara tıklayın.',
     wiringStep2: 'ADIM 2: Kabloyu bağlamak için hedef anahtara tıklayın.',
     wiringBannerOff: 'İncelemek için anahtara tıklayın. Taşımak için sürükleyin. Görünümü kaydırmak için boş tuval alanını sürükleyin.',
     trafficFlow: 'Trafik Akışı',
+    trafficSimulation: 'Trafik Akışı',
     stepPlayback: 'Adım Adım Oynat',
     tabSyslog: 'BPDU LOG & İZLEME',
     tabTable: 'ANAHTAR & PORT TABLOSU',
@@ -234,6 +247,8 @@ export const translations: Record<Language, Translations> = {
     switchName: 'Anahtar Adı',
     macAddress: 'MAC Adresi',
     priority: 'Köprü Önceliği (BID)',
+    portPriority: 'Port Önceliği',
+    portName: 'Port Adı',
     vlan: 'VLAN (Sistem Uzantısı)',
     editSwitch: 'Anahtarı İncele / Düzenle',
     deleteSwitch: 'Anahtarı Sil',
@@ -264,6 +279,22 @@ export const translations: Record<Language, Translations> = {
     finishTour: 'Turu Bitir',
     nextTourStep: 'Sonraki Adım →',
     prevTourStep: '← Önceki',
+    prevStep: 'Önceki',
+    nextStep: 'Sonraki',
+    pausePlay: 'Duraklat',
+    autoPlay: 'Otomatik Oynat',
+    noLogsYet: 'Henüz log kaydı yok...',
+    mstpTitle: 'MSTP Örnekleri',
+    mstpInstance: 'Örnek (Instance)',
+    vlansMapped: 'Haritalanan VLAN\'lar',
+    instanceRoot: 'Örnek Kök Anahtarı',
+    metricsTitle: 'Topoloji Metrikleri',
+    totalSwitches: 'Toplam Anahtar',
+    totalLinks: 'Toplam Bağlantı',
+    activeLoopsBlocked: 'Engellenen Döngü Sayısı',
+    rootSwitchId: 'Kök Anahtar ID',
+    failoverTitle: 'Yedek Hat Simülasyonu',
+    failoverDesc: 'Fiziksel kesinti simülasyonu için kabloya çift tıklayın',
 
     // 8-Step Tour Texts
     tourStep1Title: '1. STP Protokol Sürüm Seçimi (802.1D / 802.1w / 802.1s)',

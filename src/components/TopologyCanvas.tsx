@@ -124,7 +124,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (canvasRef.current) {
+    if (wiringMode && wiringSourcePortId && canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
       const currentCanvasX = (e.clientX - rect.left - panOffset.x) / zoomLevel;
       const currentCanvasY = (e.clientY - rect.top - panOffset.y) / zoomLevel;
@@ -680,7 +680,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       {/* Centered Port Selector Modal Overlay */}
       {portModalSwitchId && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 font-mono text-xs"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 font-mono text-xs"
           onClick={() => setPortModalSwitchId(null)}
         >
           <div
