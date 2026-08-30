@@ -393,8 +393,6 @@ export const App: React.FC = () => {
         onClearCanvas={handleClearCanvas}
         onOpenHelp={() => setIsTourOpen(true)}
         onOpenTimers={() => setIsTimersOpen(true)}
-        wiringMode={wiringMode}
-        setWiringMode={setWiringMode}
       />
 
       <div className="flex-1 flex overflow-hidden">

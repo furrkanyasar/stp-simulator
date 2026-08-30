@@ -786,46 +786,43 @@
       return (
         <div className="flex flex-col h-screen w-screen bg-[#0b0f19] text-slate-100 overflow-hidden font-sans">
           {/* Header */}
-          <header className="h-[44px] bg-[#0d1322] border-b border-[#1f293d] flex items-center justify-between px-3 shrink-0 select-none text-xs text-slate-200 overflow-x-auto">
-            <div className="flex items-center space-x-2 font-bold text-cyan-400 shrink-0">
-              <span className="text-base">⚡</span>
-              <span className="text-slate-100 tracking-wider">STP <span className="text-cyan-400 font-normal">Simulator</span></span>
+          <header className="h-[44px] bg-[#0d1322] border-b border-[#1f293d] flex items-center justify-between px-3 shrink-0 select-none text-xs text-slate-200 overflow-hidden">
+            <div className="flex items-center space-x-1.5 font-bold text-cyan-400 shrink-0">
+              <span className="text-sm">⚡</span>
+              <span className="text-slate-100 font-mono text-xs uppercase tracking-wider">STP <span className="text-cyan-400 font-normal">Simulator</span></span>
             </div>
 
-            <div className="flex items-center space-x-3 shrink-0">
-              <button onClick={() => setWiringMode(!wiringMode)} className={`px-2.5 py-1 h-7 rounded text-[11px] font-mono font-bold border transition-all shrink-0 ${wiringMode ? 'bg-amber-500 text-slate-950 border-amber-400 animate-pulse' : 'bg-[#111827] text-slate-300 border-[#1f293d]'}`}>
-                {wiringMode ? t.wiringOn : t.wiringOff}
-              </button>
-
+            <div className="flex items-center space-x-1.5 shrink-0">
               {/* Version Selector */}
-              <div className="flex items-center bg-[#111827] border border-[#1f293d] px-2 py-1 h-7 rounded shrink-0">
-                <span className="text-slate-400 mr-1.5 text-[11px]">{t.version}:</span>
-                <button onClick={() => handleSetStpVersion('802.1D')} className={`px-2 py-0.5 rounded text-[11px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1D' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400'}`}>{t.stpClassic}</button>
-                <button onClick={() => handleSetStpVersion('802.1w')} className={`px-2 py-0.5 rounded text-[11px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1w' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400'}`}>{t.stpRapid}</button>
-                <button onClick={() => handleSetStpVersion('802.1s')} className={`px-2 py-0.5 rounded text-[11px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1s' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400'}`}>{t.stpMultiple}</button>
+              <div className="flex items-center bg-[#111827] border border-[#1f293d] px-1.5 py-0.5 h-7 rounded shrink-0">
+                <span className="text-slate-400 mr-1 text-[10px]">{t.version}:</span>
+                <button onClick={() => handleSetStpVersion('802.1D')} title={t.stpClassic} className={`px-1.5 py-0.5 rounded text-[10px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1D' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}>802.1D</button>
+                <button onClick={() => handleSetStpVersion('802.1w')} title={t.stpRapid} className={`px-1.5 py-0.5 rounded text-[10px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1w' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}>802.1w (RSTP)</button>
+                <button onClick={() => handleSetStpVersion('802.1s')} title={t.stpMultiple} className={`px-1.5 py-0.5 rounded text-[10px] font-mono h-5 flex items-center shrink-0 ${stpVersion === '802.1s' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}>802.1s (MSTP)</button>
               </div>
 
               {/* Cost Standard Toggle */}
-              <div className="flex items-center space-x-1 bg-[#111827] border border-[#1f293d] px-2 py-1 h-7 rounded shrink-0">
-                <span className="text-[#94a3b8] font-mono mr-1 text-[11px]">{t.costModel}:</span>
-                <button onClick={() => setCostStandard('short')} className={`px-2 py-0.5 rounded font-mono text-[11px] h-5 flex items-center shrink-0 ${costStandard === 'short' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}>Short</button>
-                <button onClick={() => setCostStandard('long')} className={`px-2 py-0.5 rounded font-mono text-[11px] h-5 flex items-center shrink-0 ${costStandard === 'long' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}>Long</button>
+              <div className="flex items-center space-x-0.5 bg-[#111827] border border-[#1f293d] px-1.5 py-0.5 h-7 rounded shrink-0">
+                <span className="text-slate-400 font-mono mr-1 text-[10px]">{t.costModel}:</span>
+                <button onClick={() => setCostStandard('short')} className={`px-1.5 py-0.5 rounded font-mono text-[10px] h-5 flex items-center shrink-0 ${costStandard === 'short' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}>Short</button>
+                <button onClick={() => setCostStandard('long')} className={`px-1.5 py-0.5 rounded font-mono text-[10px] h-5 flex items-center shrink-0 ${costStandard === 'long' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}>Long</button>
               </div>
 
               <select onChange={(e) => {
                 const p = PRESETS.find(pr => pr.id === e.target.value);
                 if (p) { setSwitchesList(p.switches); setPortsList(p.ports); setLinksList(p.links); }
-              }} className="bg-[#111827] border border-[#1f293d] text-slate-200 px-2 py-1 h-7 rounded shrink-0">
+              }} className="bg-[#111827] border border-[#1f293d] text-slate-200 px-1.5 py-0.5 h-7 rounded shrink-0 font-mono text-[10px] max-w-[130px]">
                 {PRESETS.map(p => <option key={p.id} value={p.id}>{lang === 'tr' ? p.nameTr : p.nameEn}</option>)}
               </select>
-              <button onClick={() => setIsTimersOpen(true)} className="px-2 py-1 h-7 bg-violet-600/80 hover:bg-violet-600 text-violet-50 rounded border border-violet-500/50 font-mono font-bold transition-all text-[11px] shrink-0" title="STP Timers">
-                ⏱️
-              </button>
 
-              <button onClick={handleAddSwitch} className="px-2.5 py-1 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold text-[11px] shrink-0">{t.addSwitch}</button>
-              <button onClick={() => { addOperatorLog('ENGINE', 'Manual convergence recalculation triggered by NOC operator.', 'NOC operatörü tarafından manuel yakınsama tetiklendi.'); setSwitchesList([...switchesList]); }} className="px-2.5 py-1 h-7 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold text-[11px] shrink-0">{t.recalculate}</button>
-              <button onClick={() => setIsTourOpen(true)} className="px-2.5 py-1 h-7 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded font-bold text-[11px] shrink-0">{t.helpButton}</button>
-              <div className="flex bg-[#111827] border border-[#1f293d] rounded p-0.5 h-7 shrink-0 ml-1">
+              <button onClick={handleAddSwitch} className="px-2 py-0.5 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-medium text-[11px] shrink-0">{t.addSwitch}</button>
+              <button onClick={() => { addOperatorLog('ENGINE', 'Manual convergence recalculation triggered by NOC operator.', 'NOC operatörü tarafından manuel yakınsama tetiklendi.'); setSwitchesList([...switchesList]); }} className="px-2 py-0.5 h-7 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium text-[11px] shrink-0">{t.recalculate}</button>
+              <button onClick={() => setIsTimersOpen(true)} className="px-2 py-0.5 h-7 bg-violet-600/80 hover:bg-violet-600 text-violet-50 rounded border border-violet-500/50 font-mono font-medium transition-all text-[11px] shrink-0" title="STP Timers">
+                ⏱️ {lang === 'tr' ? 'Zamanlayıcılar' : 'Timers'}
+              </button>
+              <button onClick={() => setIsTourOpen(true)} className="px-2 py-0.5 h-7 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded font-bold text-[11px] shrink-0">{t.helpButton}</button>
+
+              <div className="flex bg-[#111827] border border-[#1f293d] rounded p-0.5 h-7 shrink-0">
                 <button onClick={() => setLang('en')} className={`px-1.5 py-0.5 rounded text-[10px] h-5 flex items-center ${lang === 'en' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'}`}>EN</button>
                 <button onClick={() => setLang('tr')} className={`px-1.5 py-0.5 rounded text-[10px] h-5 flex items-center ${lang === 'tr' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'}`}>TR</button>
               </div>
