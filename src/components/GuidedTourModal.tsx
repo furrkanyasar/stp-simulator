@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language } from '../core/types';
 import { getTranslation } from '../core/i18n';
 import { Rocket, BookOpen, ChevronRight, ChevronLeft, CheckCircle, HelpCircle, X, Sliders, ShieldCheck } from 'lucide-react';
@@ -13,6 +13,16 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
   const t = getTranslation(lang);
   const [activeTab, setActiveTab] = useState<'tour' | 'manual'>('tour');
   const [currentStep, setCurrentStep] = useState<number>(0);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
