@@ -149,6 +149,7 @@ export const App: React.FC = () => {
     });
 
     if (selectedSwitchId === switchId) setSelectedSwitchId(null);
+    if (editingSwitch?.id === switchId) setEditingSwitch(null);
     addOperatorLog('ACTION', `Deleted switch ${sw?.name || switchId}.`, `${sw?.name || switchId} anahtarı silindi.`);
   };
 
@@ -232,6 +233,8 @@ export const App: React.FC = () => {
       return next;
     });
 
+    if (editingLink?.id === linkId) setEditingLink(null);
+    if (bpduViewerLinkId === linkId) setBpduViewerLinkId(null);
     addOperatorLog('ACTION', `Deleted cable link ${linkId}.`, `${linkId} kablo bağlantısı silindi.`);
   };
 
@@ -350,6 +353,8 @@ export const App: React.FC = () => {
     setSelectedSwitchId(null);
     setEditingSwitch(null);
     setEditingLink(null);
+    setBpduViewerLinkId(null);
+    setWiringMode(false);
     addOperatorLog('ACTION', 'Cleared canvas.', 'Tuval üzerindeki tüm cihazlar ve kablolar temizlendi.');
   };
 

@@ -717,20 +717,35 @@
       };
 
       const handleMouseMove = (e) => {
-        if (canvasRef.current) {
+        if (canvasRef.current && wiringMode && wiringSourcePortId) {
           const rect = canvasRef.current.getBoundingClientRect();
           setMousePos({ x: (e.clientX - rect.left - panOffset.x) / zoomLevel, y: (e.clientY - rect.top - panOffset.y) / zoomLevel });
         }
-        if (isPanning) {
-          setPanOffset({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
-          return;
-        }
-        if (draggingId && canvasRef.current && !wiringMode) {
-          const newX = (e.clientX - panOffset.x) / zoomLevel - dragOffset.x;
-          const newY = (e.clientY - panOffset.y) / zoomLevel - dragOffset.y;
-          setSwitchesList(prev => prev.map(s => s.id === draggingId ? { ...s, x: Math.round(newX), y: Math.round(newY) } : s));
-        }
       };
+
+      React.useEffect(() => {
+        const handleGlobalMouseMove = (e) => {
+          if (isPanning) {
+            setPanOffset({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
+          } else if (draggingId && !wiringMode) {
+            const newX = (e.clientX - panOffset.x) / zoomLevel - dragOffset.x;
+            const newY = (e.clientY - panOffset.y) / zoomLevel - dragOffset.y;
+            setSwitchesList(prev => prev.map(s => s.id === draggingId ? { ...s, x: Math.round(newX), y: Math.round(newY) } : s));
+          }
+        };
+        const handleGlobalMouseUp = () => {
+          setIsPanning(false);
+          setDraggingId(null);
+        };
+        if (isPanning || draggingId) {
+          window.addEventListener('mousemove', handleGlobalMouseMove);
+          window.addEventListener('mouseup', handleGlobalMouseUp);
+          return () => {
+            window.removeEventListener('mousemove', handleGlobalMouseMove);
+            window.removeEventListener('mouseup', handleGlobalMouseUp);
+          };
+        }
+      }, [isPanning, draggingId, panStart, dragOffset, panOffset, zoomLevel, wiringMode]);
 
       const getPortCoords = (port) => {
         const sw = convergence.switches.get(port.switchId);

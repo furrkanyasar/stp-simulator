@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SwitchNode, Port, LinkConnection, Language, LinkSpeed, STPVersion, CostStandard } from '../core/types';
 import { getTranslation } from '../core/i18n';
 
@@ -145,6 +145,51 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       onUpdateSwitchPosition(draggingSwitchId, Math.round(newX), Math.round(newY));
     }
   };
+
+  // Global window listeners for drag & pan to prevent getting stuck when mouse leaves canvas
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isPanning) {
+        setPanOffset({
+          x: e.clientX - panStart.x,
+          y: e.clientY - panStart.y,
+        });
+      } else if (draggingSwitchId && !wiringMode) {
+        const newX = (e.clientX - panOffset.x) / zoomLevel - dragOffset.x;
+        const newY = (e.clientY - panOffset.y) / zoomLevel - dragOffset.y;
+        onUpdateSwitchPosition(draggingSwitchId, Math.round(newX), Math.round(newY));
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsPanning(false);
+      setDraggingSwitchId(null);
+    };
+
+    if (isPanning || draggingSwitchId) {
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleGlobalMouseMove);
+        window.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
+    }
+  }, [isPanning, draggingSwitchId, panStart, dragOffset, panOffset, zoomLevel, wiringMode, onUpdateSwitchPosition]);
+
+  // Escape key listener to cleanly exit modal or cancel wiring mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setWiringSourcePortId(null);
+        setWiringSourceSwitchId(null);
+        setPortModalSwitchId(null);
+        setSelectedLinkId(null);
+        if (wiringMode) setWiringMode(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [wiringMode, setWiringMode]);
 
   const handleMouseUp = () => {
     setIsPanning(false);
