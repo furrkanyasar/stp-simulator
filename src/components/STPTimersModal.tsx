@@ -44,12 +44,15 @@ export const STPTimersModal: React.FC<STPTimersModalProps> = ({
 
   const t = getTranslation(lang);
 
-  // IEEE 802.1D constraint: 2 * (fwd_delay - 1) >= max_age
+  // IEEE 802.1D constraints:
+  // 1. 2 * (fwd_delay - 1) >= max_age
+  // 2. max_age >= 2 * (hello_time + 1)
   const isValid =
     maxAge >= 6 && maxAge <= 40 &&
     helloTime >= 1 && helloTime <= 10 &&
     forwardDelay >= 4 && forwardDelay <= 30 &&
-    2 * (forwardDelay - 1) >= maxAge;
+    2 * (forwardDelay - 1) >= maxAge &&
+    maxAge >= 2 * (helloTime + 1);
 
   const handleSave = () => {
     if (!isValid) return;
@@ -168,10 +171,10 @@ export const STPTimersModal: React.FC<STPTimersModalProps> = ({
             <span className="text-amber-400 font-bold">{forwardDelay * 2}s</span>
           </div>
           {!isValid && (
-            <div className="mt-1.5 text-rose-400 font-bold">
-              ⚠️ {lang === 'tr'
-                ? 'IEEE 802.1D kuralı: 2×(Fwd Delay - 1) ≥ Max Age olmalı'
-                : 'IEEE 802.1D rule: 2×(Fwd Delay - 1) ≥ Max Age required'}
+            <div className="mt-1.5 text-rose-400 font-bold space-y-0.5">
+              <div>⚠️ {lang === 'tr' ? 'IEEE 802.1D kuralları:' : 'IEEE 802.1D rules:'}</div>
+              <div className="text-[9px] font-normal">• 2 × (Fwd Delay - 1) ≥ Max Age</div>
+              <div className="text-[9px] font-normal">• Max Age ≥ 2 × (Hello Time + 1)</div>
             </div>
           )}
         </div>

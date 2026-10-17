@@ -14,11 +14,20 @@ import {
 } from './types';
 import { getLinkCost } from './costTable';
 
-export function compareBridgeId(aPri: number, aMac: string, bPri: number, bMac: string): number {
-  if (aPri !== bPri) {
-    return aPri - bPri;
+export function compareBridgeId(
+  aPri: number,
+  aMac: string,
+  bPri: number,
+  bMac: string,
+  aVlan: number = 1,
+  bVlan: number = 1
+): number {
+  const aEffectivePri = aPri + aVlan;
+  const bEffectivePri = bPri + bVlan;
+  if (aEffectivePri !== bEffectivePri) {
+    return aEffectivePri - bEffectivePri;
   }
-  return aMac.localeCompare(bMac);
+  return aMac.toLowerCase().localeCompare(bMac.toLowerCase());
 }
 
 export function formatBridgeId(priority: number, mac: string, vlan: number = 1): string {
@@ -128,7 +137,14 @@ export function calculateSTPConvergence(
     if (!rootSwitch) {
       rootSwitch = sw;
     } else {
-      const cmp = compareBridgeId(sw.priority, sw.mac, rootSwitch.priority, rootSwitch.mac);
+      const cmp = compareBridgeId(
+        sw.priority,
+        sw.mac,
+        (rootSwitch as SwitchNode).priority,
+        (rootSwitch as SwitchNode).mac,
+        sw.vlan,
+        (rootSwitch as SwitchNode).vlan
+      );
       if (cmp < 0) {
         rootSwitch = sw;
       }
@@ -186,7 +202,14 @@ export function calculateSTPConvergence(
         } else if (potentialCost === distB.cost && distB.cost !== Infinity && distB.neighborId) {
           const currentNeighbor = switches.get(distB.neighborId)!;
           const newNeighbor = switches.get(swAId)!;
-          const cmpBID = compareBridgeId(newNeighbor.priority, newNeighbor.mac, currentNeighbor.priority, currentNeighbor.mac);
+          const cmpBID = compareBridgeId(
+            newNeighbor.priority,
+            newNeighbor.mac,
+            currentNeighbor.priority,
+            currentNeighbor.mac,
+            newNeighbor.vlan,
+            currentNeighbor.vlan
+          );
           if (cmpBID < 0) {
             distances.set(swBId, { cost: potentialCost, viaPortId: link.portBId, neighborId: swAId });
             changed = true;
@@ -203,7 +226,14 @@ export function calculateSTPConvergence(
         } else if (potentialCost === distA.cost && distA.cost !== Infinity && distA.neighborId) {
           const currentNeighbor = switches.get(distA.neighborId)!;
           const newNeighbor = switches.get(swBId)!;
-          const cmpBID = compareBridgeId(newNeighbor.priority, newNeighbor.mac, currentNeighbor.priority, currentNeighbor.mac);
+          const cmpBID = compareBridgeId(
+            newNeighbor.priority,
+            newNeighbor.mac,
+            currentNeighbor.priority,
+            currentNeighbor.mac,
+            newNeighbor.vlan,
+            currentNeighbor.vlan
+          );
           if (cmpBID < 0) {
             distances.set(swAId, { cost: potentialCost, viaPortId: link.portAId, neighborId: swBId });
             changed = true;
@@ -269,7 +299,14 @@ export function calculateSTPConvergence(
 
     candidatePorts.sort((a, b) => {
       if (a.totalCost !== b.totalCost) return a.totalCost - b.totalCost;
-      const cmpBID = compareBridgeId(a.senderSwitch.priority, a.senderSwitch.mac, b.senderSwitch.priority, b.senderSwitch.mac);
+      const cmpBID = compareBridgeId(
+        a.senderSwitch.priority,
+        a.senderSwitch.mac,
+        b.senderSwitch.priority,
+        b.senderSwitch.mac,
+        a.senderSwitch.vlan,
+        b.senderSwitch.vlan
+      );
       if (cmpBID !== 0) return cmpBID;
       if (a.senderPort.priority !== b.senderPort.priority) return a.senderPort.priority - b.senderPort.priority;
       return a.senderPort.portNumber - b.senderPort.portNumber;
@@ -332,7 +369,7 @@ export function calculateSTPConvergence(
     if (swA.rootPathCost !== swB.rootPathCost) {
       winner = swA.rootPathCost < swB.rootPathCost ? 'A' : 'B';
     } else {
-      const cmpBID = compareBridgeId(swA.priority, swA.mac, swB.priority, swB.mac);
+      const cmpBID = compareBridgeId(swA.priority, swA.mac, swB.priority, swB.mac, swA.vlan, swB.vlan);
       if (cmpBID !== 0) {
         winner = cmpBID < 0 ? 'A' : 'B';
       } else if (pA.priority !== pB.priority) {
@@ -401,12 +438,23 @@ export function calculateSTPConvergence(
   });
 
   // STEP 5: BUILD SIMULATED BPDU FRAMES PER LINK
+  // In IEEE 802.1D Clause 8.4, the Designated Port on an active segment is the transmitter of Configuration BPDUs.
   const rootBridgeIdStr = formatBridgeId(rootObj.priority, rootObj.mac, rootObj.vlan);
   links.forEach((link) => {
     if (link.status !== 'UP') return;
     const pA = ports.get(link.portAId);
-    if (!pA) return;
-    const senderSw = switches.get(pA.switchId);
+    const pB = ports.get(link.portBId);
+    if (!pA || !pB) return;
+
+    // Determine transmitter: Designated Port generates/forwards BPDU down the segment
+    let dpPort = pA;
+    if (pB.role === 'DESIGNATED') {
+      dpPort = pB;
+    } else if (pA.role === 'DESIGNATED') {
+      dpPort = pA;
+    }
+
+    const senderSw = switches.get(dpPort.switchId);
     if (!senderSw) return;
 
     const senderBridgeIdStr = formatBridgeId(senderSw.priority, senderSw.mac, senderSw.vlan);
@@ -415,8 +463,8 @@ export function calculateSTPConvergence(
       rootBridgeId: rootBridgeIdStr,
       rootPathCost: senderSw.rootPathCost === Infinity ? 0 : senderSw.rootPathCost,
       senderBridgeId: senderBridgeIdStr,
-      senderPortId: pA.name,
-      senderPortPriority: pA.priority,
+      senderPortId: dpPort.name,
+      senderPortPriority: dpPort.priority,
       messageAge: 0,
       maxAge: timers.maxAge,
       helloTime: timers.helloTime,

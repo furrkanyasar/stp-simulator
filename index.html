@@ -203,9 +203,11 @@
       return standard === 'short' ? (SHORT_COST[speed] || 19) : (LONG_COST[speed] || 200000);
     }
 
-    function compareBridgeId(aPri, aMac, bPri, bMac) {
-      if (aPri !== bPri) return aPri - bPri;
-      return aMac.localeCompare(bMac);
+    function compareBridgeId(aPri, aMac, bPri, bMac, aVlan = 1, bVlan = 1) {
+      const aEff = aPri + aVlan;
+      const bEff = bPri + bVlan;
+      if (aEff !== bEff) return aEff - bEff;
+      return aMac.toLowerCase().localeCompare(bMac.toLowerCase());
     }
 
     function formatBridgeId(priority, mac, vlan = 1) {
@@ -356,7 +358,7 @@
       let rootSwitch = null;
       switches.forEach(sw => {
         if (!rootSwitch) rootSwitch = sw;
-        else if (compareBridgeId(sw.priority, sw.mac, rootSwitch.priority, rootSwitch.mac) < 0) rootSwitch = sw;
+        else if (compareBridgeId(sw.priority, sw.mac, rootSwitch.priority, rootSwitch.mac, sw.vlan, rootSwitch.vlan) < 0) rootSwitch = sw;
       });
 
       const rootId = rootSwitch.id;
@@ -430,7 +432,7 @@
         if (candidates.length === 0) return;
         candidates.sort((a, b) => {
           if (a.totalCost !== b.totalCost) return a.totalCost - b.totalCost;
-          const cmp = compareBridgeId(a.senderSw.priority, a.senderSw.mac, b.senderSw.priority, b.senderSw.mac);
+          const cmp = compareBridgeId(a.senderSw.priority, a.senderSw.mac, b.senderSw.priority, b.senderSw.mac, a.senderSw.vlan, b.senderSw.vlan);
           if (cmp !== 0) return cmp;
           if (a.senderPort.priority !== b.senderPort.priority) return a.senderPort.priority - b.senderPort.priority;
           return a.senderPort.portNumber - b.senderPort.portNumber;
@@ -464,7 +466,7 @@
         if (swA.rootPathCost !== swB.rootPathCost) {
           winner = swA.rootPathCost < swB.rootPathCost ? 'A' : 'B';
         } else {
-          winner = compareBridgeId(swA.priority, swA.mac, swB.priority, swB.mac) < 0 ? 'A' : 'B';
+          winner = compareBridgeId(swA.priority, swA.mac, swB.priority, swB.mac, swA.vlan, swB.vlan) < 0 ? 'A' : 'B';
         }
 
         const dpPort = winner === 'A' ? pA : pB;
@@ -472,8 +474,9 @@
         const dpSw = winner === 'A' ? swA : swB;
         const blockSw = winner === 'A' ? swB : swA;
 
+        const blockedRole = swA.id === swB.id ? 'BACKUP' : 'ALTERNATE';
         dpPort.role = 'DESIGNATED'; dpPort.state = 'FORWARDING';
-        blockPort.role = 'ALTERNATE'; blockPort.state = stpVersion === '802.1D' ? 'BLOCKING' : 'DISCARDING';
+        blockPort.role = blockedRole; blockPort.state = stpVersion === '802.1D' ? 'BLOCKING' : 'DISCARDING';
 
         const versionDesc = stpVersion === '802.1D' ? 'BLOCKING state (15s Forwarding Delay timer)' : stpVersion === '802.1w' ? 'DISCARDING state (Immediate RSTP P/A cutoff)' : 'DISCARDING state (MST0/CIST Instance blocking)';
         const versionDescTr = stpVersion === '802.1D' ? 'BLOCKING durumuna (15sn İletim Gecikmesi zamanlayıcısı)' : stpVersion === '802.1w' ? 'DISCARDING durumuna (Anlık RSTP P/A kesintisi)' : 'DISCARDING durumuna (MST0/CIST Örneklem engellemesi)';
@@ -696,7 +699,7 @@
       const handleSaveLinkModal = () => {
         if (!inspectorLink) return;
         const parsedCost = modalCustomCost.trim() !== '' ? Number(modalCustomCost) : undefined;
-        const finalCost = parsedCost && !isNaN(parsedCost) && parsedCost > 0 ? parsedCost : undefined;
+        const finalCost = parsedCost && Number.isFinite(parsedCost) && parsedCost > 0 && parsedCost <= 200000000 ? Math.round(parsedCost) : undefined;
 
         setLinksList(prev => prev.map(l => l.id === inspectorLink.id ? { ...l, status: modalLinkStatus, speed: modalLinkSpeed, customCost: finalCost } : l));
 
@@ -1327,12 +1330,27 @@
                   <button onClick={() => setBpduModalLink(null)} className="text-slate-400 hover:text-slate-200">✕</button>
                 </div>
                 <div className="space-y-2 bg-[#0b0f19] p-3 rounded border border-[#1f293d]">
-                  <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Root Bridge ID:</span><span className="font-bold text-amber-400">{formatBridgeId(convergence.switches.get(convergence.rootSwitchId)?.priority || 32768, convergence.switches.get(convergence.rootSwitchId)?.mac || '00:00:00:00:00:00')}</span></div>
-                  <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Root Path Cost:</span><span className="font-bold text-cyan-400">{bpduModalLink.customCost !== undefined ? bpduModalLink.customCost : getLinkCost(bpduModalLink.speed, costStandard)}</span></div>
-                  <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Sender Switch:</span><span className="font-bold text-slate-200">{convergence.switches.get(bpduModalLink.switchAId)?.name || 'SW'}</span></div>
-                  <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Max Age:</span><span className="font-bold text-slate-200">{stpTimers.maxAge}s</span></div>
-                  <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Hello Time:</span><span className="font-bold text-slate-200">{stpTimers.helloTime}s</span></div>
-                  <div className="flex justify-between"><span className="text-slate-400">Forward Delay:</span><span className="font-bold text-slate-200">{stpTimers.forwardDelay}s</span></div>
+                  {(() => {
+                    const pA = convergence.ports.get(bpduModalLink.portAId);
+                    const pB = convergence.ports.get(bpduModalLink.portBId);
+                    const dpPort = (pB && pB.role === 'DESIGNATED') ? pB : pA;
+                    const senderSw = dpPort ? convergence.switches.get(dpPort.switchId) : null;
+                    const rootSw = convergence.switches.get(convergence.rootSwitchId);
+                    const rootBID = formatBridgeId(rootSw?.priority || 32768, rootSw?.mac || '00:00:00:00:00:00', rootSw?.vlan || 1);
+                    const senderBID = senderSw ? formatBridgeId(senderSw.priority, senderSw.mac, senderSw.vlan || 1) : '';
+                    const rpcVal = senderSw ? (senderSw.rootPathCost === Infinity ? 0 : senderSw.rootPathCost) : 0;
+                    return (
+                      <>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Root Bridge ID:</span><span className="font-bold text-amber-400">{rootBID}</span></div>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Root Path Cost:</span><span className="font-bold text-cyan-400">{rpcVal}</span></div>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Sender Bridge ID:</span><span className="font-bold text-slate-200">{senderBID}</span></div>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Transmitting Port (DP):</span><span className="font-bold text-emerald-400">{senderSw?.name || 'SW'}:{dpPort?.name || 'Gi0/1'}</span></div>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Max Age:</span><span className="font-bold text-slate-200">{stpTimers.maxAge}s</span></div>
+                        <div className="flex justify-between border-b border-[#1f293d] pb-1"><span className="text-slate-400">Hello Time:</span><span className="font-bold text-slate-200">{stpTimers.helloTime}s</span></div>
+                        <div className="flex justify-between"><span className="text-slate-400">Forward Delay:</span><span className="font-bold text-slate-200">{stpTimers.forwardDelay}s</span></div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <div className="flex justify-end pt-2">
                   <button onClick={() => setBpduModalLink(null)} className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded">Kapat</button>

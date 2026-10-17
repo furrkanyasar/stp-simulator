@@ -24,17 +24,27 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   // 1. Safe URL path normalization & traversal protection
-  const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('400 Bad Request');
+    return;
+  }
+
   let safePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
   if (safePath === '/' || safePath === '') safePath = '/app.html';
 
   // 2. Resolve absolute file path safely within PUBLIC_DIR
   const filePath = path.resolve(path.join(PUBLIC_DIR, safePath));
 
-  // 3. Security Boundary & Dotfile Check: Enforce strictly within PUBLIC_DIR root
+  // 3. Security Boundary & Dotfile Check: Enforce strictly within PUBLIC_DIR root and no hidden dot-segments (.git, .github, etc.)
   const isWithinRoot = filePath === PUBLIC_DIR || filePath.startsWith(PUBLIC_DIR + path.sep);
-  const baseName = path.basename(filePath);
-  if (!isWithinRoot || baseName.startsWith('.')) {
+  const relPath = path.relative(PUBLIC_DIR, filePath);
+  const hasDotSegment = relPath.split(path.sep).some((part) => part.startsWith('.'));
+
+  if (!isWithinRoot || hasDotSegment) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('403 Forbidden: Access Denied');
     return;
